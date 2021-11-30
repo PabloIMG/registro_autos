@@ -1,10 +1,11 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState } from 'react';
+import axios from 'axios';
 
 const Componente = () => {
 
     const [patente, setPatente] = useState("")
     const [anio, setAnio] = useState("")
-    const [marca, setMarca] = useState("")
+    const [id_marca, setMarca] = useState("")
 
     const [auto, setAuto] = useState([])
 
@@ -20,17 +21,61 @@ const Componente = () => {
         setMarca(event.target.value)
     }
 
+    async function getAutos(){
+        try {
+            const response = await axios.get('http://localhost:5000/api/autos')
+            if (response.status == 200){
+                setAuto(response.data.auto)
+            }
+        }
+        catch (error){
+            console.error(error)
+        }
+    }
+
+    async function getMarcas(){
+        try {
+            const response = await axios.get('http://localhost:5000/api/marcas')
+            if (response.status == 200){
+                setMarca(response.data.marca)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    function guardarAuto(){
+        axios.post('http://localhost:5000/api/autos', {
+            patente: patente,
+            anio: anio,
+            id_marca: id_marca
+        })
+        .then(function (response){
+            if (response.status == 200){
+                alert("Auto registrado correctamente")
+                getAutos()
+            }
+            else {
+                alert("Error al guardar")
+            }
+        })
+        .catch(function (error){
+            console.log(error);
+        });
+    }
+
+
     const enviarDatos = () => {
 
         let nuevo =
         {
-            patent: patente,
-            year: anio,
-            brand: marca,
+            patente: patente,
+            anio: anio,
+            id_marca: id_marca,
         }
 
         //* Validar datos ingresados.
-        if(patente.length < 6 || patente.length > 6 || marca.length===0)
+        if(patente.length < 6 || patente.length > 6 || id_marca.length===0)
         {
             alert("Por favor ingresar datos correctamente!!");
         }
@@ -84,9 +129,9 @@ const Componente = () => {
                             </thead>
                             {auto.map((auto) => (
                                 <tbody>
-                                    <td>{auto.brand}</td>
-                                    <td>{auto.patent}</td>
-                                    <td>{auto.year}</td>
+                                    <td>{auto.id_marca}</td>
+                                    <td>{auto.patente}</td>
+                                    <td>{auto.anio}</td>
                                 </tbody>
                             ))}
                         </table>
