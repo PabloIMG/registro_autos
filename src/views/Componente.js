@@ -1,11 +1,12 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
 
 const Componente = () => {
 
     const [patente, setPatente] = useState("")
     const [anio, setAnio] = useState("")
-    const [id_marca, setMarca] = useState("")
+    const [marcas, setMarcas] = useState([])
+    const [marca, setMarca] = useState("")
 
     const [auto, setAuto] = useState([])
 
@@ -37,7 +38,7 @@ const Componente = () => {
         try {
             const response = await axios.get('http://localhost:5000/api/marcas')
             if (response.status == 200){
-                setMarca(response.data.marca)
+                setMarcas(response.data.marcas)
             }
         } catch (error) {
             console.error(error)
@@ -47,8 +48,7 @@ const Componente = () => {
     function guardarAuto(){
         axios.post('http://localhost:5000/api/autos', {
             patente: patente,
-            anio: anio,
-            id_marca: id_marca
+            anio: anio
         })
         .then(function (response){
             if (response.status == 200){
@@ -70,12 +70,11 @@ const Componente = () => {
         let nuevo =
         {
             patente: patente,
-            anio: anio,
-            id_marca: id_marca,
+            anio: anio
         }
 
         //* Validar datos ingresados.
-        if(patente.length < 6 || patente.length > 6 || id_marca.length===0)
+        if(patente.length < 6 || patente.length > 6)
         {
             alert("Por favor ingresar datos correctamente!!");
         }
@@ -87,6 +86,9 @@ const Componente = () => {
         setAnio("")
         setMarca("")
     }
+    useEffect(() => {
+        getMarcas()
+    }, [])
 
     return(
         <Fragment>
@@ -106,13 +108,10 @@ const Componente = () => {
 
                     <div>
                         <p class="mb-0">MARCA</p>
-                        <select class="border border-primary rounded mb-3" type="text" name="select" onChange={handleInputChangeMarca} value={patente}>
-                            <option value="null">Seleccione Marca</option>
-                            <option value="Ford">Ford</option>
-                            <option value="BMW">BMW</option>
-                            <option value="Suzuki">Suzuki</option>
-                            <option value="Toyota">Toyota</option>
-                            <option value="Chevrolet">Chevrolet</option>
+                        <select class="border border-primary rounded mb-3" type="text" name="select">
+                            {marcas.map((marca) => (
+                                <option value={marca._id}>{marca.nombre}</option>
+                            ))}
                         </select>
                     </div>
 
