@@ -7,7 +7,7 @@ const Componente = () => {
     const [anio, setAnio] = useState("")
     const [marcas, setMarcas] = useState([])
     const [marca, setMarca] = useState("")
-
+    const [autos, setAutos] = useState([])
     const [auto, setAuto] = useState([])
 
     const handleInputChangePatente = (event) => {
@@ -26,7 +26,7 @@ const Componente = () => {
         try {
             const response = await axios.get('http://localhost:5000/api/autos')
             if (response.status == 200){
-                setAuto(response.data.auto)
+                setAutos(response.data.autos)
             }
         }
         catch (error){
@@ -45,10 +45,24 @@ const Componente = () => {
         }
     }
 
+    const getMarca = (id) => {
+        try {
+            const response = axios.get(`http://localhost:5000/api/marca/${id}`)
+            if (response.status == 200){
+                alert(response.data.marca.nombre)
+                setMarca(response.data.marca.nombre)
+                return response.data.marca.nombre
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     function guardarAuto(){
         axios.post('http://localhost:5000/api/autos', {
             patente: patente,
-            anio: anio
+            anio: anio,
+            marca: marca
         })
         .then(function (response){
             if (response.status == 200){
@@ -70,7 +84,8 @@ const Componente = () => {
         let nuevo =
         {
             patente: patente,
-            anio: anio
+            anio: anio,
+            id_marca: marca._id
         }
 
         //* Validar datos ingresados.
@@ -88,6 +103,7 @@ const Componente = () => {
     }
     useEffect(() => {
         getMarcas()
+        getAutos()
     }, [])
 
     return(
@@ -108,7 +124,7 @@ const Componente = () => {
 
                     <div>
                         <p class="mb-0">MARCA</p>
-                        <select class="border border-primary rounded mb-3" type="text" name="select">
+                        <select class="border border-primary rounded mb-3" type="text" name="marca" onChange={handleInputChangeMarca}>
                             {marcas.map((marca) => (
                                 <option value={marca._id}>{marca.nombre}</option>
                             ))}
@@ -116,7 +132,7 @@ const Componente = () => {
                     </div>
 
                     <div>
-                        <button class="btn btn-primary mb-3" onClick={enviarDatos}>GUARDAR</button>
+                        <button class="btn btn-primary mb-3" onClick={guardarAuto}>GUARDAR</button>
                     </div>
 
                     <div className="autos">
@@ -126,9 +142,9 @@ const Componente = () => {
                                 <td><b>PATENTE</b></td>
                                 <td><b>AÑO</b></td>
                             </thead>
-                            {auto.map((auto) => (
+                            {autos.map((auto) => (
                                 <tbody>
-                                    <td>{auto.id_marca}</td>
+                                    <td>{ () =>{getMarca(auto.marca)}}</td>
                                     <td>{auto.patente}</td>
                                     <td>{auto.anio}</td>
                                 </tbody>
