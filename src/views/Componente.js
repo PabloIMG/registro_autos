@@ -26,7 +26,9 @@ const Componente = () => {
         try {
             const response = await axios.get('http://localhost:5000/api/autos')
             if (response.status == 200){
-                setAutos(response.data.autos)
+                //alert(response.data)
+                console.log(response.data.autoconmarca)
+                setAutos(response.data.autoconmarca)
             }
         }
         catch (error){
@@ -38,13 +40,15 @@ const Componente = () => {
         try {
             const response = await axios.get('http://localhost:5000/api/marcas')
             if (response.status == 200){
-                setMarcas(response.data.marcas)
+                //alert(response.data)
+                //console.log(response.data)
+                setMarcas(response.data.marca)
             }
         } catch (error) {
             console.error(error)
         }
     }
-
+/*
     const getMarca = (id) => {
         try {
             const response = axios.get(`http://localhost:5000/api/marca/${id}`)
@@ -57,12 +61,12 @@ const Componente = () => {
             console.error(error)
         }
     }
-
+*/
     function guardarAuto(){
         axios.post('http://localhost:5000/api/autos', {
             patente: patente,
             anio: anio,
-            marca: marca
+            idMarca: marca
         })
         .then(function (response){
             if (response.status == 200){
@@ -144,7 +148,7 @@ const Componente = () => {
                             </thead>
                             {autos.map((auto) => (
                                 <tbody>
-                                    <td>{ () =>{getMarca(auto.marca)}}</td>
+                                    <td>{ auto.marca.nombre }</td>
                                     <td>{auto.patente}</td>
                                     <td>{auto.anio}</td>
                                 </tbody>
